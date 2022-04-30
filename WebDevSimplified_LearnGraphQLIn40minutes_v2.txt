@@ -1,0 +1,179 @@
+
+ubuntu@ip-172-31-26-154:~$
+
+
+
+
+    1  ls
+    2  npm init
+    3  sudo apt install npm
+    4  sudo apt-get update
+    5  sudo apt install npm
+    6  npm init
+    7  ls
+    8  vi package.json
+    9  npm i express express-graphql graphql
+   10  npm i --save-dev nodemon
+   11  vi package.json
+   12  vi server.js
+   13  ls
+   14  history
+   15  cat server.js
+   16  cp server.js server1.js
+   17  vi server1.js
+   18  nodemon server1.js
+   19  ls
+   20  npm i express express-graphql graphql
+   21  npm i --save-dev nodemon
+   22  vi package.json
+   23  npm run devStart
+   24  history
+
+
+
+
+ubuntu@ip-172-31-26-154:~$ vi server1.js
+const express = require('express')
+const app = express()
+app.listen(5000., () => console.log('Server Running'))
+
+
+
+
+const express = require('express')
+const graphqlHTTP   = require('express-graphql').graphqlHTTP;
+const {
+        GraphQLSchema,
+        GraphQLObjectType,
+        GraphQLString
+} = require('graphql')
+
+const app = express()
+
+const schema = new GraphQLSchema({
+        query: new GraphQLObjectType({
+                name: 'HelloWorld',
+                fields: () => ({
+                        message: {
+                                        type: GraphQLString,
+                                        resolve: () => 'Hello World'
+                        }
+                })
+        })
+})
+
+app.use('/graphql', graphqlHTTP({
+        schema: schema,
+        graphiql: true
+}));
+
+
+
+
+app.listen(4000., () => console.log('Server Running'))
+
+
+
+
+
+
+
+
+
+
+
+http://ec2-52-39-205-20.us-west-2.compute.amazonaws.com:4000/graphql
+
+
+
+
+
+
+
+ubuntu@ip-172-31-26-154:~$ cat  server1.js
+const express = require('express')
+const graphqlHTTP   = require('express-graphql').graphqlHTTP;
+const {
+        GraphQLSchema,
+        GraphQLObjectType,
+        GraphQLString,
+        GraphQLList,
+        GraphQLInt,
+        GraphQLNonNull
+} = require('graphql')
+
+const app = express()
+
+
+const authors = [
+        { id: 1, name: 'J. K. Rowling' },
+        { id: 2, name: 'J. R. R. Tolkien' },
+        { id: 3, name: 'Brent Weeks' }
+]
+
+const books = [
+        { id: 1, name: 'Harry Potter and the Chamber of Secrets', authorId: 1 },
+        { id: 2, name: 'Harry Potter and the Prisoner of Azkaban', authorId: 1 },
+        { id: 3, name: 'Harry Potter and the Goblet of Fire', authorId: 1 },
+        { id: 4, name: 'The Fellowship of the Ring', authorId: 2 },
+        { id: 5, name: 'The Two Towers', authorId: 2 },
+        { id: 6, name: 'The Return of the King', authorId: 2 },
+        { id: 7, name: 'The Way of Shadows', authorId: 3 },
+        { id: 8, name: 'Beyond the Shadows', authorId: 3 }
+]
+
+const BookType = new GraphQLObjectType({
+        name: 'Book',
+        description: 'This represents a books written by an author',
+        fields: () => ({
+                id: { type: GraphQLInt },
+                name: { type: GraphQLString},
+                authorId: { type: GraphQLInt }
+
+                })
+})
+
+const RootQueryType = new GraphQLObjectType({
+        name: 'Query',
+        description: 'Root Query',
+        fields: () => ({
+                books: {
+                        type: new GraphQLList(BookType),
+                        description: 'List of All Books',
+                        resolve: () => books
+                }
+        })
+})
+
+
+const schema  = new GraphQLSchema({
+        query: RootQueryType,
+})
+
+
+//const schema = new GraphQLSchema({
+//      query: new GraphQLObjectType({
+//              name: 'HelloWorld',
+//              fields: () => ({
+//                      message: {
+//                                      type: GraphQLString,
+//                                      resolve: () => 'Hello World'
+//                      }
+//              })
+//      })
+//})
+
+app.use('/graphql', graphqlHTTP({
+        schema: schema,
+        graphiql: true
+}));
+
+
+
+
+app.listen(4000., () => console.log('Server Running'))
+
+
+
+
+
